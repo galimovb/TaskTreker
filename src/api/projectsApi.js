@@ -38,14 +38,6 @@ export const projectsApi = createApi({
             }),
             invalidatesTags: ['Project'],
         }),
-        createProjectGroup: builder.mutation({
-            query: (newGroup) => ({
-                url: '/groups/new',
-                method: 'POST',
-                body: newGroup,
-                invalidatesTags: ['ProjectsInfo'],
-            }),
-        }),
     }),
 });
 
@@ -53,5 +45,4 @@ export const {
     useGetProjectsQuery,
     useCreateProjectMutation,
     useGetProjectTasksQuery,
-    useCreateProjectGroupMutation
 } = projectsApi;

@@ -11,6 +11,9 @@ export const usersApi = createApi({
                 query: () => '/users', // GET-запрос на /users
                 providesTags: ['User'],
             }),
+            logoutUser:builder.query({
+                query:() => '/logout',
+            }),
             // Мутация для создания пользователя
             createUser: builder.mutation({
                 query: (newUser) => ({
@@ -33,6 +36,7 @@ export const usersApi = createApi({
     // Экспортируем автоматически сгенерированные хуки
     export const {
         useGetUsersQuery,
+        useLogoutUserQuery,
         useCreateUserMutation,
         useLoginUserMutation,
     } = usersApi;

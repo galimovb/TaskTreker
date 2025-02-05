@@ -15,25 +15,11 @@ export function ProjectTasksTopMenu({project}) {
                     {project.name}
                 </h1>
             </div>
-            <div className='p-x-2 p-y-1'>
-                <Search
-                    placeholder="Найти задачи"
-                    allowClear
-                    className='flex-initial min-w-[400px]'
-                    size={'large'}
-                />
-            </div>
             <div className='flex items-center gap-4'>
-                <Avatar.Group shape="square">
-                    {project.coauthors.map((author) => (
-                        <Avatar style={{backgroundColor: '#fde3cf'}}>
-                            {author.firstName.charAt(0)}
-                            {author.lastName.charAt(0)}
-                        </Avatar>
-                    ))}
-                </Avatar.Group>
-
-                <BellOutlined className='text-2xl'/>
+                <Avatar style={{backgroundColor: '#fde3cf'}}>
+                    {project.coauthors[0].firstName.charAt(0)}
+                    {project.coauthors[0].lastName.charAt(0)}
+                </Avatar>
             </div>
 
         </div>

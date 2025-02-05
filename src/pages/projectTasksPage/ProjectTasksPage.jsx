@@ -20,17 +20,21 @@ export function ProjectTasksPage(){
     }, [resp]);
 
     const onGroupCreated = (newGroup) => {
-        setGroups((prevGroups) => [...prevGroups, newGroup]); // Иммутабельное обновление
+        setGroups((prevGroups) => [...prevGroups, newGroup]);
     };
-
+    const onGroupDeleted = (id) => {
+        setGroups((prevGroups) => prevGroups.filter(group => group.id !== id));
+    };
 
     return (
         <>
             {project && <ProjectTasksTopMenu project={project} />}
             <GroupList
-                groups={groups}
-                onGroupCreated={onGroupCreated}
+                propGroups={groups}
                 authors={authors}
+                projectId={id}
+                onGroupCreated={onGroupCreated}
+                onGroupDeleted={onGroupDeleted}
             />
         </>
     )

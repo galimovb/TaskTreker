@@ -8,6 +8,8 @@ import {RegistrPage} from "./pages/registrPage/RegistrPage.jsx";
 import {MainPage} from "./pages/mainPage/MainPage.jsx";
 import {FilterRoute} from "./components/route-check/FilterRoute.jsx";
 import {ProjectTasksPage} from "./pages/projectTasksPage/ProjectTasksPage.jsx";
+import {MyTasksPage} from "./pages/my-tasks/MyTasksPage.jsx";
+
 
 export function App() {
     return (
@@ -38,6 +40,7 @@ export function App() {
                 >
                     <Route path="projects" element={<MainPage />} />
                     <Route path="projects/:id" element={<ProjectTasksPage />} />
+                    <Route path="tasks" element={<MyTasksPage />} />
                 </Route>
             </Routes>
         </Router>

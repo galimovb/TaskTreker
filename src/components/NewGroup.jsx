@@ -1,10 +1,11 @@
 import React, {useState} from "react";
 import {PlusOutlined} from "@ant-design/icons";
 import {Button, Card, Input, message, Space} from "antd";
-import {useCreateProjectGroupMutation} from "../api/projectsApi.js";
+import {useCreateProjectGroupMutation} from "../api/groupApi.js";
 
 
-export function NewGroup({projectId = 9,onGroupCreated}) {
+
+export function NewGroup({projectId,onGroupCreated}) {
     const [isFormVisible, setIsFormVisible] = useState(false);
     const [groupName, setGroupName] = useState("");
     const [createGroup, {isLoading}] = useCreateProjectGroupMutation();

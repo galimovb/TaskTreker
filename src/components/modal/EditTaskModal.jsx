@@ -1,28 +1,31 @@
-import { Modal, Form, Input, Button, DatePicker, AutoComplete, Select, message } from "antd";
+import {Button, DatePicker, Form, Input, message, Modal, Select} from "antd";
 import dayjs from 'dayjs';
-import { useState, useEffect } from "react";
-import { useCreateTaskMutation } from "../../api/taskApi.js";
+import {useEffect} from "react";
+import {useDeleteTaskMutation, useEditTaskMutation} from "../../api/taskApi.js";
+import {DeleteOutlined} from "@ant-design/icons";
 
-export function NewTaskModal({ onClose, openModal, groupId, authors,onTaskCreated }) {
+
+export function EditTaskModal({ onClose, openModal, task}) {
     const [form] = Form.useForm();
-    const [emailOptions, setEmailOptions] = useState([]);
-    const [authorEmails, setAuthorEmails] = useState([]);
-    const [createTask, { isLoading, error }] = useCreateTaskMutation();
+    const [editTask, { isLoading, error }] = useEditTaskMutation();
+    const [deleteTask,{isLoadingDelete,deleteError}] = useDeleteTaskMutation();
 
     useEffect(() => {
-        if (authors && authors.length > 0) {
-            const emails = authors.map(author => author.email);
-            setAuthorEmails(emails);
-            const options = authors.map(author => ({
-                value: author.email,
-            }));
-            setEmailOptions(options);
+        if (task) {
+            form.setFieldsValue({
+                name: task.name,
+                description: task.description,
+                finishDate: dayjs(task.finishDate),
+                priority: task.priority,
+                status: task.status
+            });
+            console.log(task)
         }
-    }, [authors]);
+    }, [task, form]);
 
-    const createTaskFormSubmit = async (values) => {
-        if (values.dueDate) {
-            values.dueDate = values.dueDate.format('YYYY-MM-DD');
+    const updateTaskFormSubmit = async (values) => {
+        if (values.finishDate) {
+            values.finishDate = values.finishDate.format('YYYY-MM-DD');
         }
 
         if (!values.priority) {
@@ -33,32 +36,24 @@ export function NewTaskModal({ onClose, openModal, groupId, authors,onTaskCreate
         }
 
         try {
-            const response = await createTask({ ...values, groupId }).unwrap();
-            const newTask = response.task;
-
-            message.success('Задача успешно создана!');
-
-            onTaskCreated(newTask);
+            const response = await editTask({ ...values, id: task.id }).unwrap();
+            message.success('Задача успешно обновлена!');
             onClose(false);
         } catch (err) {
-            message.error('Не удалось создать задачу. Попробуйте снова.');
+            message.error('Не удалось обновить задачу. Попробуйте снова.');
         }
     };
 
-    const filterAutocompleteValues = (searchText) => {
-        const filteredOptions = emailOptions.filter(option =>
-            option.value.toLowerCase().includes(searchText.toLowerCase())
-        );
-        setEmailOptions(filteredOptions);
-    };
-
-    const validateEmail = (rule, value, callback) => {
-        if (!authorEmails.includes(value)) {
-            callback('Нельзя назначить задачу, если пользователь не является соавтором проекта');
-        } else {
-            callback();
+    const deleteTaskMutation = async ()=>{
+        try{
+            const response = await deleteTask(task.id).unwrap();
+            message.success('Задача успешно удалена')
         }
-    };
+        catch (err){
+            message.error('Возникла ошибка при удалении задачи')
+        }
+    }
+
 
     return (
         <Modal
@@ -68,13 +63,22 @@ export function NewTaskModal({ onClose, openModal, groupId, authors,onTaskCreate
             onOk={() => onClose(false)}
             onCancel={() => onClose(false)}
         >
-            <h1 className='font-bold text-xl mb-4'>
-                Создайте новую задачу
-            </h1>
+            <div className='flex justify-between p-4'>
+                <h1 className='font-bold text-xl mb-4'>
+                    Редактировать задачу
+                </h1>
+                <Button
+                    link
+                    onClick={deleteTaskMutation}
+                >
+                    <DeleteOutlined/>
+                </Button>
+            </div>
+
             <Form
                 form={form}
                 layout="vertical"
-                onFinish={createTaskFormSubmit}
+                onFinish={updateTaskFormSubmit}
             >
                 <Form.Item
                     label="Название задачи"
@@ -120,27 +124,23 @@ export function NewTaskModal({ onClose, openModal, groupId, authors,onTaskCreate
                 </Form.Item>
 
                 <Form.Item
-                    label="Кому назначить задачу"
-                    name="user"
-                    rules={[{ required: true, message: "Введите почту исполнителя" }, { validator: validateEmail }]}
+                    label="Статус задачи"
+                    name="status"
+                    rules={[{ required: true, message: "Выберите статус задачи" }]}
                 >
-                    <AutoComplete
-                        options={emailOptions}
-                        onSearch={filterAutocompleteValues}
-                        placeholder="Введите почту"
-                        filterOption={(inputValue, option) =>
-                            option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-                        }
-                    />
+                    <Select placeholder="Выберите статус задачи">
+                        <Select.Option value="NEW">Новая</Select.Option>
+                        <Select.Option value="INWORK">В процессе</Select.Option>
+                        <Select.Option value="COMPLETED">Завершена</Select.Option>
+                    </Select>
                 </Form.Item>
 
                 <Form.Item>
                     <Button
                         type="primary"
                         htmlType="submit"
-                        loading={isLoading}
                     >
-                        Создать задачу
+                        Обновить задачу
                     </Button>
                 </Form.Item>
             </Form>
